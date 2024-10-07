@@ -16,16 +16,23 @@ ExternalProject_Add(
 )
 
 add_executable(demo src/main.cpp)
+add_executable(slaves src/slaves.cpp)
+
 add_dependencies(demo SOEM)
+add_dependencies(slaves SOEM)
+
 include_directories("${CMAKE_INSTALL_PREFIX}/include")
 
 find_package(ament_cmake REQUIRED)
 
 set(SOEM_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/libsoem.a)
+
 target_link_libraries(demo ${SOEM_LIBRARY})
+target_link_libraries(slaves ${SOEM_LIBRARY})
 
 install(TARGETS
   demo
+  slaves
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
