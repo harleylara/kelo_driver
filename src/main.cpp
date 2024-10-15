@@ -1,5 +1,7 @@
 #include <iostream>
 #include <soem/ethercat.h>
+#include <stdio.h>
+#include <string.h>
 
 char IOmap[4096];
 bool forceByteAligment = TRUE;
@@ -28,7 +30,7 @@ struct __attribute__((packed)) MasterBatteryPDI {
 };
 
 // Process Data Outputs for Master Battery module
-struct MasterBatteryPDO {
+struct __attribute__((packed)) MasterBatteryPDO {
     uint32_t Command1;
     uint32_t Command2;
     uint16_t Shutdown;
@@ -86,14 +88,18 @@ int main() {
             MasterBatteryPDI* inputs;
             inputs = (MasterBatteryPDI*)ec_slave[1].inputs;
 
+
             outputs.Command1 = 0;
-            outputs.Command2 = 0x01;
-            outputs.Shutdown = 0x80;
-            outputs.PwrDeviceId = 0x00;
+            outputs.Command2 = 0;
+            outputs.Shutdown = 0;
+            outputs.PwrDeviceId = 0;
+
+            memcpy(ec_slave[1].outputs, &outputs, sizeof(outputs));
 
             ec_send_processdata();
             ec_receive_processdata(EC_TIMEOUTRET);
             ec_send_processdata();
+
             std::cout << "TimeStamp: " << inputs->TimeStamp << std::endl;
             std::cout << "Status: " << inputs->Status << std::endl;
             std::cout << "Error: " << inputs->Error << std::endl;
@@ -113,8 +119,6 @@ int main() {
             std::cout << "bmsm_SN: " << inputs->bmsm_SN << std::endl;
             std::cout << "bmsm_BatData1: " << inputs->bmsm_BatData1 << std::endl;
             std::cout << "bmsm_BatData2: " << inputs->bmsm_BatData2 << std::endl;
-            //osal_usleep(1000000);
-            //}
 
         }
 
