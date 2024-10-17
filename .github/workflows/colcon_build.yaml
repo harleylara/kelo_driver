@@ -12,22 +12,19 @@ jobs:
 
   colcon-build:
     runs-on: ubuntu-latest
+    container:
+      image: osrf/ros:humble-desktop
+    strategy:
+      matrix:
+
+        os: [ubuntu-22.04]
+      fail-fast: false
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Set up ROS 2
-      uses: ros-tooling/setup-ros@v0.2
-      with:
-        required-ros-distributions: humble
-
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y python3-colcon-common-extensions build-essential cmake
-
-    - name: Build with colcon
-      run: |
-        colcon build --event-handlers console_cohesion+
-
+      - name: Install deps
+        run: sudo apt-get update && sudo apt-get install -y wget python3-vcstool python3-colcon-coveragepy-result
+      - name: build
+        uses: ros-tooling/action-ros-ci@0.3.5
+        with:
+          target-ros2-distro: humble
+          skip-tests: true
