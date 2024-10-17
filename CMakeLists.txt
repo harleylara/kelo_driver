@@ -11,6 +11,8 @@ ExternalProject_Add(
     SOEM
     GIT_REPOSITORY  https://github.com/OpenEtherCATsociety/SOEM.git 
     GIT_TAG         master
+    GIT_SHALLOW     1
+    UPDATE_DISCONNECTED 1
     SOURCE_DIR      "${CMAKE_CURRENT_SOURCE_DIR}/soem"
     CMAKE_ARGS      -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 )
