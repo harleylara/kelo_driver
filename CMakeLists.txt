@@ -22,6 +22,9 @@ add_dependencies(demo SOEM)
 add_dependencies(slaves SOEM)
 
 include_directories("${CMAKE_INSTALL_PREFIX}/include")
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
 find_package(ament_cmake REQUIRED)
 
@@ -30,10 +33,35 @@ set(SOEM_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/libsoem.a)
 target_link_libraries(demo ${SOEM_LIBRARY})
 target_link_libraries(slaves ${SOEM_LIBRARY})
 
+# Create the shared library
+add_library(kelo_driver SHARED src/EthercatBus.cpp)
+
+# Install the library and headers
+install(TARGETS kelo_driver
+  EXPORT export_kelo_driver
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+# Install header files
+install(DIRECTORY include/
+  DESTINATION include
+)
+
+# Test executable linking to the shared library
+add_executable(kelo src/kelo.cpp)
+target_link_libraries(kelo PRIVATE kelo_driver)
+
 install(TARGETS
   demo
   slaves
+  kelo
   DESTINATION lib/${PROJECT_NAME})
+
+# Export package
+ament_export_include_directories(include)
+ament_export_libraries(kelo_driver)
 
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
