@@ -1,0 +1,33 @@
+name: Colcon Build and Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+
+  colcon-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up ROS 2
+      uses: ros-tooling/setup-ros@v0.2
+      with:
+        required-ros-distributions: humble
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3-colcon-common-extensions build-essential cmake
+
+    - name: Build with colcon
+      run: |
+        colcon build --event-handlers console_cohesion+
+
