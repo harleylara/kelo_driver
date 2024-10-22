@@ -25,13 +25,6 @@ include_directories(
 
 find_package(ament_cmake QUIET)
 
-if (ament_cmake_FOUND)
-    message(STATUS "ament_cmake found. Enabling ROS 2 specific parts.")
-else()
-    message(STATUS "ament_cmake not found. Building without ROS 2 support.")
-endif()
-
-
 set(SOEM_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/libsoem.a)
 
 # Create the shared library
@@ -60,20 +53,24 @@ install(TARGETS
   kelo
   DESTINATION lib/${PROJECT_NAME})
 
-# Export package
-ament_export_include_directories(include)
-ament_export_libraries(kelo_driver)
+if (ament_cmake_FOUND)
+    message("ament_cmake found. Enabling ROS 2 specific parts.")
+    # Export package
+    ament_export_include_directories(include)
+    ament_export_libraries(kelo_driver)
+    if(BUILD_TESTING)
+        find_package(ament_lint_auto REQUIRED)
+        # the following line skips the linter which checks for copyrights
+        # comment the line when a copyright and license is added to all source files
+        set(ament_cmake_copyright_FOUND TRUE)
+        # the following line skips cpplint (only works in a git repo)
+        # comment the line when this package is in a git repo and when
+        # a copyright and license is added to all source files
+        set(ament_cmake_cpplint_FOUND TRUE)
+        ament_lint_auto_find_test_dependencies()
+    endif()
+    ament_package()
+else()
+    message("ament_cmake not found. Building without ROS 2 support.")
 
-if(BUILD_TESTING)
-    find_package(ament_lint_auto REQUIRED)
-    # the following line skips the linter which checks for copyrights
-    # comment the line when a copyright and license is added to all source files
-    set(ament_cmake_copyright_FOUND TRUE)
-    # the following line skips cpplint (only works in a git repo)
-    # comment the line when this package is in a git repo and when
-    # a copyright and license is added to all source files
-    set(ament_cmake_cpplint_FOUND TRUE)
-    ament_lint_auto_find_test_dependencies()
 endif()
-
-ament_package()
