@@ -18,26 +18,25 @@ ExternalProject_Add(
                     -DCMAKE_C_FLAGS="-fPIC"
 )
 
-add_executable(demo src/main.cpp)
-add_executable(slaves src/slaves.cpp)
-
-add_dependencies(demo SOEM)
-add_dependencies(slaves SOEM)
-
 include_directories("${CMAKE_INSTALL_PREFIX}/include")
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-find_package(ament_cmake REQUIRED)
+find_package(ament_cmake QUIET)
+
+if (ament_cmake_FOUND)
+    message("ament_cmake found. Enabling ROS 2 specific parts.")
+else()
+    message("ament_cmake not found. Building without ROS 2 support.")
+endif()
+
 
 set(SOEM_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/libsoem.a)
 
-target_link_libraries(demo ${SOEM_LIBRARY})
-target_link_libraries(slaves ${SOEM_LIBRARY})
-
 # Create the shared library
 add_library(kelo_driver SHARED src/EthercatBus.cpp)
+add_dependencies(kelo_driver SOEM)
 target_link_libraries(kelo_driver PRIVATE ${SOEM_LIBRARY})
 
 # Install the library and headers
@@ -58,8 +57,6 @@ add_executable(kelo src/kelo.cpp)
 target_link_libraries(kelo PRIVATE kelo_driver)
 
 install(TARGETS
-  demo
-  slaves
   kelo
   DESTINATION lib/${PROJECT_NAME})
 
