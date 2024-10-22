@@ -26,9 +26,9 @@ include_directories(
 find_package(ament_cmake QUIET)
 
 if (ament_cmake_FOUND)
-    message("ament_cmake found. Enabling ROS 2 specific parts.")
+    message(STATUS "ament_cmake found. Enabling ROS 2 specific parts.")
 else()
-    message("ament_cmake not found. Building without ROS 2 support.")
+    message(STATUS "ament_cmake not found. Building without ROS 2 support.")
 endif()
 
 
