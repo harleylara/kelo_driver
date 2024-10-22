@@ -15,6 +15,7 @@ ExternalProject_Add(
     UPDATE_DISCONNECTED 1
     SOURCE_DIR      "${CMAKE_CURRENT_SOURCE_DIR}/soem"
     CMAKE_ARGS      -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                    -DCMAKE_C_FLAGS="-fPIC"
 )
 
 add_executable(demo src/main.cpp)
@@ -37,6 +38,7 @@ target_link_libraries(slaves ${SOEM_LIBRARY})
 
 # Create the shared library
 add_library(kelo_driver SHARED src/EthercatBus.cpp)
+target_link_libraries(kelo_driver PRIVATE ${SOEM_LIBRARY})
 
 # Install the library and headers
 install(TARGETS kelo_driver
